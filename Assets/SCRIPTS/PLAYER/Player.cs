@@ -1,34 +1,19 @@
-/*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+/
-/-+ Script written by Matthew Vale, Red Phoenix Studios. -+-/
-/-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
-using UnityEngine;
+public class Player {
 
-public class Player : MonoBehaviour {
+    public int playerScore;
+    public PlayerType.Type playerType;
+    public string playerName;
 
-	#region VARIABLES - USE SUB-REGIONS 
-	#region CACHE
-
-	#endregion
-	#endregion
-
-
-	#region SETUP
-	private void Awake() {
-		Init();
-	}
-	private void Init() {
-		CacheVars();
-	}
-	private void CacheVars() {
-	
-	}
-	private void Start(){
-		
-	}
-	#endregion
-
-	#region PUBLIC METHODS
-
-	#endregion
+    /// <summary>
+    /// Create a new instance of a player with some parameters.
+    /// </summary>
+    /// <param name="initialScore">Typically '0', but can be used to give starting points or even load from a save file.</param>
+    /// <param name="playerType">Type of player, human or AI.</param>
+    /// <param name="playerName">Name given to the player.</param>
+    public Player(int initialScore, PlayerType.Type playerType, string playerName) {
+        playerScore = initialScore;
+        this.playerType = playerType;
+        this.playerName = playerName;
+    }
 
 }

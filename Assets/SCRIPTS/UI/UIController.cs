@@ -12,14 +12,14 @@ public class UIController : MonoBehaviour {
 	public enum UIState {
 		MAIN_MENU, HELP, GAME
 	}
+	#endregion
+	#region MAIN CANVASES
+	public Canvas mainMenuCanvas, gameSetupCanvas, gameCanvas, helpCanvas;
     #endregion
     #region AUDIO
     public Image audioImage;
 	public Sprite audioIcon_On, audioIcon_Muted;
 	#endregion
-	#region HELP
-	public Canvas helpCanvas;
-    #endregion
     #endregion
 
 
@@ -27,23 +27,45 @@ public class UIController : MonoBehaviour {
     private void Awake() {
 		Instance = this;
 	}
+
+    private void Start() {
+		CloseAllUICanvases(mainMenuCanvas);    
+    }
     #endregion
 
     #region UI STATE
-	private void SwitchUIState(UIState state) {
+    private void SwitchUIState(UIState state) {
 		curUIState = state;
 	}
     #endregion
 
-    #region PUBLIC METHODS
+    #region COMMON UI METHODS (private)
     /// <summary>
-    /// Set the audio icon to muted or not.
+    /// Useful for disabling all canvases and enabling a new one, if required.
     /// </summary>
-    public void SetMuteIcon(bool state) {
+    /// <param name="canvasToOpen">An optional canvas to open after closing the others.</param>
+    private void CloseAllUICanvases(Canvas canvasToOpen = null) {
+		mainMenuCanvas.enabled = false;
+		gameSetupCanvas.enabled = false;
+		gameCanvas.enabled = false;
+		helpCanvas.enabled = false;
+
+		if (canvasToOpen != null)		canvasToOpen.enabled = true;
+	}
+	#endregion
+
+	#region PUBLIC METHODS
+	/// <summary>
+	/// Set the audio icon to muted or not.
+	/// </summary>
+	public void SetMuteIcon(bool state) {
 		if (state)	audioImage.sprite = audioIcon_Muted;
 		if (!state)	audioImage.sprite = audioIcon_On;
 	}
 
+	/// <summary>
+	/// Display the help canvas. Useful for players new to the game or those who need a reminder.
+	/// </summary>
 	public void ToggleHelpCanvas() {
 		if (!helpCanvas.enabled) {
 			SwitchUIState(UIState.HELP);
@@ -52,6 +74,19 @@ public class UIController : MonoBehaviour {
 			helpCanvas.enabled = false;
 		}
 	}
-	#endregion
+
+	public void OpenGameSetupCanvas() {
+		CloseAllUICanvases(gameSetupCanvas);
+	}
+
+	public void ReturnToMainMenuCanvas() {
+		CloseAllUICanvases(mainMenuCanvas);
+		SwitchUIState(UIState.MAIN_MENU);
+	}
+
+	public void OpenGameBoardCanvas() {
+		CloseAllUICanvases(gameCanvas);
+	}
+    #endregion
 
 }

@@ -239,7 +239,7 @@ TextureImporter:
         width: 512
         height: 512
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -247,6 +247,27 @@ TextureImporter:
       bones: []
       spriteID: 8b8f183cbb919cd4b844ffabd1e66e48
       internalID: 493305601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: arrow
+      rect:
+        serializedVersion: 2
+        x: 2560
+        y: 3584
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 699ba33f22819f74792b43cc68e17e46
+      internalID: 1061759321
       vertices: []
       indices: 
       edges: []
@@ -267,6 +288,7 @@ TextureImporter:
       TicTacToe_UIAtlas_4096_512_7: 1561652914
       TicTacToe_UIAtlas_4096_512_8: -2129145961
       X: 1758051863
+      arrow: 1061759321
       audio_icon: -974496309
       audio_mute_icon: -93738758
       circle: 484458725
