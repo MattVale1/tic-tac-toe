@@ -12,25 +12,31 @@ public class MainMenuController : MonoBehaviour {
     #endregion
 
 
+    #region SETUP
+    private void Start() {
+        gridSizeSlider.value = gridSizeSlider.minValue; // Set default value to the lowest (3).
+    }
+    #endregion
+
+
     #region PUBLIC METHODS
     // We are playing solo, make sure GameStateController knows we need to use an AI as the opponent...
     public void Select_1_Player() {
-        GameStateController.Instance.SetNumberOfPlayers(1, 1);
-        //GameStateController.Instance.SetOpponentType(PlayerType.Type.COMPUTER, 2);
+        GameStateController.Instance.SetOpponent(PlayerType.Type.COMPUTER);
 		UIController.Instance.OpenGameSetupCanvas();
 	}
 
     // We are playing with a friend, make sure GameStateController knows we will be recieving human input for both players...
     public void Select_2_Player() {
-        GameStateController.Instance.SetNumberOfPlayers(2, 0);
-        //GameStateController.Instance.SetOpponentType(PlayerType.Type.HUMAN, 2);
+        GameStateController.Instance.SetOpponent(PlayerType.Type.HUMAN);
         UIController.Instance.OpenGameSetupCanvas();
     }
 
     // Set the size of the game board using our slider.
     public void SetGridSize() {
-        // Out slider is set to integer values via th checkbox, we can just use a cast here to enforce an integer.
-        GameBoard.Instance.SetGridSize((int)gridSizeSlider.value); 
+        // Out slider is set to integer values via the checkbox...
+        // ... we can use a cast here to enforce a byte, as the intended size will range from 3-8.
+        GameBoard.Instance.SetGridSize((byte)gridSizeSlider.value); 
     }
 
     // Set the game mode using our dropdown menu.
@@ -46,7 +52,6 @@ public class MainMenuController : MonoBehaviour {
 
     // Close game config and return to the main menu canvas.
 	public void CloseGameSetup() {
-        GameStateController.Instance.RemoveAllPlayerInstances();
         UIController.Instance.ReturnToMainMenuCanvas();        
     }
 

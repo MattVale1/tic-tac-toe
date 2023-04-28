@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +21,11 @@ public class UIController : MonoBehaviour {
     public Image audioImage;
 	public Sprite audioIcon_On, audioIcon_Muted;
 	#endregion
+	#region GAME STATE UI
+	public TextMeshProUGUI playerTurnText;
+	public TextMeshProUGUI player1ScoreText;
+	public TextMeshProUGUI player2ScoreText;
+    #endregion
     #endregion
 
 
@@ -54,7 +60,7 @@ public class UIController : MonoBehaviour {
 	}
 	#endregion
 
-	#region PUBLIC METHODS
+	#region PUBLIC METHODS - MENUS
 	/// <summary>
 	/// Set the audio icon to muted or not.
 	/// </summary>
@@ -86,6 +92,16 @@ public class UIController : MonoBehaviour {
 
 	public void OpenGameBoardCanvas() {
 		CloseAllUICanvases(gameCanvas);
+	}
+    #endregion
+
+    #region PUBLIC METHODS - GAME STATE
+    public void UpdatePlayerTurn(Player p) {
+		playerTurnText.text = p.playerName;
+		playerTurnText.color = p.playerColor;
+	}
+	public void UpdateScore(Player p) {
+		player1ScoreText.text = p.playerScore.ToString();
 	}
     #endregion
 

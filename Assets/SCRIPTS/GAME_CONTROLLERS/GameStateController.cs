@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameStateController : MonoBehaviour {
 
@@ -15,9 +15,17 @@ public class GameStateController : MonoBehaviour {
 	private GameMode.Modes curMode = GameMode.Modes.STANDARD; // Store our currently selected game mode, standard by default.
     #endregion
     #region PLAYERS
-    private PlayerType.Type opponentType = PlayerType.Type.COMPUTER; // Computer by default.
-    private Player curPlayerForTurn;
-    public List<Player> curPlayers = new(); // List of players currently in the game.
+    private PlayerType.Type opponent = PlayerType.Type.COMPUTER; // Computer by default.
+    public Player curPlayerTurn { get; private set; }
+    private Player player1;
+    private Player player2;
+    #endregion
+    #region PLAYER SYMBOLS
+    [Header("Player Colours")]
+    public Sprite player1Sprite;
+    public Color player1Color;
+    public Sprite player2Sprite;
+    public Color player2Color;
     #endregion
     #endregion
 
@@ -26,18 +34,21 @@ public class GameStateController : MonoBehaviour {
     private void Awake() {
 		Instance = this;
 	}
-
-    private void CreatePlayerInstance(PlayerType.Type type) {
-        Debug.Log("Creating player instance of type: " + type);
-    }    
     #endregion
 
 
     #region GAME LOGIC	
-    private void NextPlayerTurn() {
-        for (int i = 0; i < curPlayers.Count; i++) {
-            
+    public void NextPlayerTurn() {
+        // If we have a null reference, always enforce player1 as being the first to play.
+        if (curPlayerTurn == null) {
+            curPlayerTurn = player1;
+            return;
         }
+        // This will switch the current player, always being the opposite.
+        curPlayerTurn = (curPlayerTurn == player1) ? player2 : player1;
+
+        // Update our UI to reflect current player
+        UIController.Instance.UpdatePlayerTurn(curPlayerTurn);
 	}
 
 	private void CheckGameState() {
@@ -46,21 +57,9 @@ public class GameStateController : MonoBehaviour {
     #endregion
 
     #region PUBLIC METHODS
-    public void SetNumberOfPlayers(int humans, int computers) {
-        for (int h = 0; h < humans; h++) {
-            CreatePlayerInstance(PlayerType.Type.HUMAN);
-        }
-        for (int c = 0; c < computers; c++) {
-            CreatePlayerInstance(PlayerType.Type.COMPUTER);
-        }
+    public void SetOpponent(PlayerType.Type opponentType) {
+        opponent = opponentType;
     }
-    public void RemoveAllPlayerInstances() {
-        Debug.Log("Removing all player instances");
-        curPlayers.Clear();
-    }
- //   public void SetOpponentType(PlayerType.Type type, int playersInvoled) {
-	//	opponentType = type;
-	//}
 
 	// Set our game mode via the dropdown menu. Take note of the index numbers, they should match the number entered on the button.
 	public void SetGameMode(int modeIndex) {
@@ -76,6 +75,19 @@ public class GameStateController : MonoBehaviour {
     /// </summary>
     public void StartGame() {
         GameBoard.Instance.InitGameBoard();
+
+        // Create new player instances with an initial score, type, name, symbol and colour.
+        player1 = new Player(0, PlayerType.Type.HUMAN, "PLAYER 1", player1Sprite, player1Color);
+        player2 = new Player(0, opponent, "PLAYER 2", player2Sprite, player2Color);
+
+        NextPlayerTurn();
+    }
+
+    /// <summary>
+    /// End the current game without declaring a winner. We can just reload the scene for ease.
+    /// </summary>
+    public void EndGameAndReturnToMenu() {
+        SceneManager.LoadScene("MainScene");
     }
     #endregion
 
