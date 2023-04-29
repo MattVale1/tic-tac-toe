@@ -184,6 +184,9 @@ public class GameBoard : MonoBehaviour {
 
     // Handles the clicking of a tile button (player places an X or O).
     public void TileClicked(Tile tile) {
+        // Play a sound
+        AudioController.Instance.PlayButtonClick();
+
         // Change internal state of the tile and tell it to change the visual.
         tile.SetSymbol(GameStateController.Instance.curPlayerTurn);
 

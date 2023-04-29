@@ -91,7 +91,11 @@ public class GameStateController : MonoBehaviour {
 	
     public void GameWon() {
         //Debug.Log("<color=lime>Game won! Winner is: </color>" + curPlayerTurn.playerName);
+        // Play a sound
+        AudioController.Instance.PlayGameWin();
+        // Update player score
         curPlayerTurn.playerScore++;
+        // End the game and update the game state text to the following...
         GameEnded("THE WINNER IS...");
 	}
     
