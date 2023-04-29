@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,11 +8,11 @@ public class GameStateController : MonoBehaviour {
     #region INSTANCE
     public static GameStateController Instance { get; private set; }
 	#endregion
-	#region GAME STATE
-	private GameState.State curState = GameState.State.ONGOING; // Ongoing by default.
-	#endregion
 	#region GAME CONFIG
 	private GameMode.Modes curMode = GameMode.Modes.STANDARD; // Store our currently selected game mode, standard by default.
+    #endregion
+    #region GAME STATE
+    private GameState.State curState;
     #endregion
     #region PLAYERS
     private PlayerType.Type opponent = PlayerType.Type.COMPUTER; // Computer by default.
@@ -27,6 +27,9 @@ public class GameStateController : MonoBehaviour {
     public Sprite player2Sprite;
     public Color player2Color;
     #endregion
+    #region TIMED MODE
+    private float timeRemaining = 10f;
+    #endregion
     #endregion
 
 
@@ -35,7 +38,6 @@ public class GameStateController : MonoBehaviour {
 		Instance = this;
 	}
     #endregion
-
 
     #region GAME LOGIC	
     public void NextPlayerTurn() {
@@ -49,11 +51,69 @@ public class GameStateController : MonoBehaviour {
 
         // Update our UI to reflect current player
         UIController.Instance.UpdatePlayerTurn(curPlayerTurn);
+
+        if (curPlayerTurn.playerType == PlayerType.Type.COMPUTER) {
+            // Disable all buttons while the computer makes a move
+            GameBoard.Instance.ToggleGameBoard(false);
+            StartCoroutine(ComputerMove());
+        } else {
+            GameBoard.Instance.EnableInteractionOnEmptyTiles();
+        }
 	}
 
-	private void CheckGameState() {
+    private IEnumerator ComputerMove() {
+        yield return new WaitForSeconds(0.5f);
+        // Automatically select a random tile for the computer
+        GameBoard.Instance.TileClicked(GameBoard.Instance.GetRandomTile());
+    }
 
+    private void StartTimer() {
+        timeRemaining = 10f;
+        StartCoroutine(Timer());
+    }
+   
+    private IEnumerator Timer() {
+        UIController.Instance.UpdateGameTimer(timeRemaining);
+        yield return new WaitForSeconds(1f);
+        // If the game state changed during our countdown, we may want to stop the timer.
+        if (curState == GameState.State.ENDED) yield break;
+        timeRemaining -= 1f;        
+        if (timeRemaining <= 0f) {
+            EndTimedGame();
+        } else {
+            StartCoroutine(Timer());
+        }
+    }
+
+    public void GameTied() {
+        GameEnded("GAME TIED!");
+    }
+	
+    public void GameWon() {
+        //Debug.Log("<color=lime>Game won! Winner is: </color>" + curPlayerTurn.playerName);
+        curPlayerTurn.playerScore++;
+        GameEnded("THE WINNER IS...");
 	}
+    
+    private void EndTimedGame() {
+        GameEnded("TIME'S UP!");
+    }
+    
+    /// <summary>
+    /// Used for generic game ending events.
+    /// </summary>
+    private void GameEnded(string reason = null) {
+        // Set game state
+        curState = GameState.State.ENDED;
+        // Disable all remaining buttons
+        GameBoard.Instance.ToggleGameBoard(false);
+        // Display winner
+        UIController.Instance.UpdateGameStateText(reason);
+        // Update scores
+        UIController.Instance.UpdateScore(player1, player2);
+        // Display replay button
+        UIController.Instance.OfferRematch();
+    }
     #endregion
 
     #region PUBLIC METHODS
@@ -66,7 +126,6 @@ public class GameStateController : MonoBehaviour {
 		switch (modeIndex) {
 			case 0:	curMode = GameMode.Modes.STANDARD;	break;
 			case 1:	curMode = GameMode.Modes.TIME_LIMIT;	break;
-			case 2:	curMode = GameMode.Modes.YOU_VS_THEM;	break;
         }
 	}
 
@@ -81,6 +140,27 @@ public class GameStateController : MonoBehaviour {
         player2 = new Player(0, opponent, "PLAYER 2", player2Sprite, player2Color);
 
         NextPlayerTurn();
+
+        curState = GameState.State.ONGOING;
+        if (curMode == GameMode.Modes.TIME_LIMIT) {
+            StartTimer();
+        }
+    }
+
+    /// <summary>
+    /// Begin a new match with the same players, keeping a tally of the score.
+    /// </summary>
+    public void Rematch() {
+        // Disable replay button
+        UIController.Instance.HideRematchOffer();
+        GameBoard.Instance.ResetBoard();
+        UIController.Instance.UpdateGameStateText("Your turn:");
+        NextPlayerTurn();
+
+        curState = GameState.State.ONGOING;
+        if (curMode == GameMode.Modes.TIME_LIMIT) {
+            StartTimer();
+        }
     }
 
     /// <summary>

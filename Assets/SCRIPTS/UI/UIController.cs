@@ -22,9 +22,12 @@ public class UIController : MonoBehaviour {
 	public Sprite audioIcon_On, audioIcon_Muted;
 	#endregion
 	#region GAME STATE UI
+	public TextMeshProUGUI gameStateText;
 	public TextMeshProUGUI playerTurnText;
 	public TextMeshProUGUI player1ScoreText;
 	public TextMeshProUGUI player2ScoreText;
+	public TextMeshProUGUI timerText;
+	public GameObject rematchButton;
     #endregion
     #endregion
 
@@ -57,7 +60,10 @@ public class UIController : MonoBehaviour {
 		helpCanvas.enabled = false;
 
 		if (canvasToOpen != null)		canvasToOpen.enabled = true;
-	}
+
+        rematchButton.SetActive(false);
+		timerText.enabled = false;
+    }
 	#endregion
 
 	#region PUBLIC METHODS - MENUS
@@ -100,9 +106,26 @@ public class UIController : MonoBehaviour {
 		playerTurnText.text = p.playerName;
 		playerTurnText.color = p.playerColor;
 	}
-	public void UpdateScore(Player p) {
-		player1ScoreText.text = p.playerScore.ToString();
+	public void UpdateScore(Player p1, Player p2) {
+		player1ScoreText.text = p1.playerName + ": " + p1.playerScore.ToString();
+		player1ScoreText.color = p1.playerColor;
+		player2ScoreText.text = p2.playerName + ": " + p2.playerScore.ToString();
+        player2ScoreText.color = p2.playerColor;
+    }
+	public void UpdateGameStateText(string t) {
+        gameStateText.text = t;
 	}
+	public void UpdateGameTimer(float timeRemaining) {
+		if (!timerText.enabled) timerText.enabled = true;
+		timerText.text = timeRemaining.ToString("F0");
+
+    }
+	public void OfferRematch() {
+		rematchButton.SetActive(true);
+	}
+	public void HideRematchOffer() {
+        rematchButton.SetActive(false);
+    }
     #endregion
 
 }

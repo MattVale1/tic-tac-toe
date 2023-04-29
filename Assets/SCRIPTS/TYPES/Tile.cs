@@ -6,19 +6,26 @@ public class Tile : MonoBehaviour {
     public Button mButton;
     public Image mSprite;
     public Color emptyTileColor;
+    public Player occupyingPlayer;
 
     public void SetSymbol(Player p) {
         mSprite.sprite = p.symbol;        
         mSprite.color = p.playerColor;
         mSprite.enabled = true;
-        mButton.interactable = false;
+        AllowTileInteraction(false);
+        occupyingPlayer = p;
     }
 
     public void ResetTile() {
         mSprite.sprite = null;
         mSprite.color = emptyTileColor;
         mSprite.enabled = false;
-        mButton.interactable = true;        
+        AllowTileInteraction(true);
+        occupyingPlayer = null;
+    }
+
+    public void AllowTileInteraction(bool state) {
+        mButton.interactable = state;
     }
 
 }
